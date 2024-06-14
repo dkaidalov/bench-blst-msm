@@ -18,6 +18,9 @@
         # For `nix build` & `nix run`:
         defaultPackage = naersk'.buildPackage {
           src = ./.;
+          nativeBuildInputs = with pkgs; [ m4 pkg-config ];
+          release = true;
+          PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
         };
 
         # For `nix develop`:
