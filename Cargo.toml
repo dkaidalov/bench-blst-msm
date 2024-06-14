@@ -1,0 +1,12 @@
+[package]
+name = "bench-msm"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+rand = "0.8"
+ff = "0.13"
+group = "0.13"
+blstrs = "0.7.1" 
+rayon = "1.10.0"
