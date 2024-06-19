@@ -10,3 +10,10 @@ ff = "0.13"
 group = "0.13"
 blstrs = "0.7.1" 
 rayon = "1.10.0"
+
+[dev-dependencies]
+criterion = "0.5.1"
+
+[[bench]]
+name = "msm_bench"
+harness = false

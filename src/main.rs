@@ -1,10 +1,7 @@
-use blstrs::{G1Projective, G2Projective, Scalar};
-use ff::Field;
-use group::{Curve, Group};
-use rand::rngs::StdRng;
-use rand::{thread_rng, SeedableRng};
-use rayon::prelude::*;
+use blstrs::{G1Projective, G2Projective};
+use group::{Curve};
 use std::time::{Duration, Instant};
+use bench_msm::{prepare_input_g1, prepare_input_g2};
 const RUNS: usize = 100;
 
 fn calculate_standard_deviation(durations: &[Duration], mean: Duration) -> Duration {
@@ -42,35 +39,23 @@ where
         let msm_std_dev = calculate_standard_deviation(&msm_times, avg_msm_time);
         let naive_std_dev = calculate_standard_deviation(&naive_times, avg_naive_time);
 
-        println!(
-            "{} - Size: {} - MSM Average Time: {:?} - MSM Std Dev: {:?} - Naive Average Time: {:?} - Naive Std Dev: {:?}",
-            name, size, avg_msm_time, msm_std_dev, avg_naive_time, naive_std_dev
-        );
+        let naive_to_msm_ratio = (avg_naive_time.as_nanos() as f64) / (avg_msm_time.as_nanos() as f64);
 
-        // println!(
-        //     "{} - Size: {} - MSM Average Time: {:?} - Naive Average Time: {:?}",
-        //     name, size, avg_msm_time, avg_naive_time
-        // );
+        println!(
+            "{} - Size: {} - MSM Average Time: {:?} - MSM Std Dev: {:?} - Naive Average Time: {:?} - Naive Std Dev: {:?} - Naive to MSM Ratio: {}",
+            name, size, avg_msm_time, msm_std_dev, avg_naive_time, naive_std_dev, naive_to_msm_ratio
+        );
     }
 }
 
 fn main() {
-    let sizes = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    //let sizes = vec![15, 32, 41, 64, 128, 256, 512, 1024];
+    let sizes = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41];
+    //let sizes = vec![31, 32];
+    //let sizes = vec![15, 32, 41, 64, 128];
 
     benchmark("G1Projective", &sizes, |size| {
-        let mut rng = thread_rng();
-
-        // Generate random scalars
-        let scalars: Vec<Scalar> = (0..size).map(|_| Scalar::random(&mut rng)).collect();
-
-        // Generate random G1 points
-        let g1_points: Vec<G1Projective> = (0..size)
-            .into_par_iter()
-            .map(|i| {
-                let mut thread_rng = StdRng::seed_from_u64(i as u64);
-                G1Projective::random(&mut thread_rng)
-            })
-            .collect();
+        let (g1_points, scalars) = prepare_input_g1(size);
 
         // Benchmark MSM approach
         let stopwatch = Instant::now();
@@ -92,19 +77,7 @@ fn main() {
     });
 
     benchmark("G2Projective", &sizes, |size| {
-        let mut rng = thread_rng();
-
-        // Generate random scalars
-        let scalars: Vec<Scalar> = (0..size).map(|_| Scalar::random(&mut rng)).collect();
-
-        // Generate random G2 points
-        let g2_points: Vec<G2Projective> = (0..size)
-            .into_par_iter()
-            .map(|i| {
-                let mut thread_rng = StdRng::seed_from_u64(i as u64);
-                G2Projective::random(&mut thread_rng)
-            })
-            .collect();
+        let (g2_points, scalars) = prepare_input_g2(size);
 
         // Benchmark MSM approach
         let stopwatch = Instant::now();
