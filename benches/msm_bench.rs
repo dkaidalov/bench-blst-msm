@@ -1,11 +1,10 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use bench_msm::{prepare_input_g1, prepare_input_g2};
-use blstrs::{G1Projective, G2Projective, Scalar};
+use blstrs::{G1Projective, G2Projective};
 
 fn bench_msm(c: &mut Criterion) {
 
-    let sizes: Vec<usize> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41];
-    //let sizes: Vec<usize> = vec![1, 2, 16, 31, 32, 41];
+    let sizes = vec![10, 15, 20, 25, 30, 31, 32, 35, 40, 45, 50, 100, 200, 300, 400, 1000, 2000, 3000, 4000];
 
     let mut group1 = c.benchmark_group("msm_g1");
     let (g1_points, g1_scalars) = prepare_input_g1((*sizes.iter().max().unwrap()) as u32);

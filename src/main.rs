@@ -2,7 +2,7 @@ use blstrs::{G1Projective, G2Projective};
 use group::{Curve};
 use std::time::{Duration, Instant};
 use bench_msm::{prepare_input_g1, prepare_input_g2};
-const RUNS: usize = 100;
+const RUNS: usize = 1000;
 
 fn calculate_standard_deviation(durations: &[Duration], mean: Duration) -> Duration {
     let mean_nanos = mean.as_nanos() as f64;
@@ -45,14 +45,16 @@ where
             "{} - Size: {} - MSM Average Time: {:?} - MSM Std Dev: {:?} - Naive Average Time: {:?} - Naive Std Dev: {:?} - Naive to MSM Ratio: {}",
             name, size, avg_msm_time, msm_std_dev, avg_naive_time, naive_std_dev, naive_to_msm_ratio
         );
+
+        //println!(
+        //    "| {} | {} | {:?} | {:?} | {:?} | {:?} | {:.2} |",
+        //    name, size, avg_msm_time, msm_std_dev, avg_naive_time, naive_std_dev, naive_to_msm_ratio
+        //);
     }
 }
 
 fn main() {
-    //let sizes = vec![15, 32, 41, 64, 128, 256, 512, 1024];
-    let sizes = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41];
-    //let sizes = vec![31, 32];
-    //let sizes = vec![15, 32, 41, 64, 128];
+    let sizes = vec![10, 15, 20, 25, 30, 31, 32, 35, 40, 45, 50, 100, 200, 300, 400, 1000, 2000, 3000, 4000];
 
     benchmark("G1Projective", &sizes, |size| {
         let (g1_points, scalars) = prepare_input_g1(size);
